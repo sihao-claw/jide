@@ -25,8 +25,8 @@ dependencies:
   # 日期时间处理
   intl: ^0.18.1
   
-  # 通知提醒
-  flutter_local_notifications: ^16.3.0
+  # 通知提醒（暂时注释，等待 embedding v2 迁移完成）
+  # flutter_local_notifications: ^16.3.0
   
   # 分享功能
   share_plus: ^7.2.1
