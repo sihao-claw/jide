@@ -1,38 +1,45 @@
-# Flutter/Dart
-.dart_tool/
-.packages
-build/
-.pub/
-.pub-cache/
-.pub-token
-
-# IDE
-.idea/
-*.iml
-.vscode/
-*.swp
-*.swo
-
-# OS
-.DS_Store
-Thumbs.db
-
-# 敏感信息
-.env
-*.key
-api_key.dart
-
-# 构建产物
-*.apk
-*.aab
-*.exe
-*.msi
-*.app
-*.ipa
-
-# 测试覆盖率
-coverage/
-
-# 临时文件
+# Miscellaneous
+*.class
 *.log
-*.tmp
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# The .vscode folder contains launch configuration and tasks you configure in
+# VS Code which you may wish to be included in version control, so this line
+# is commented out by default.
+#.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+/coverage/
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Android Studio will place build artifacts here
+/android/app/debug
+/android/app/profile
+/android/app/release
