@@ -28,8 +28,8 @@ dependencies:
   # 通知提醒（暂时注释，等待 embedding v2 迁移完成）
   # flutter_local_notifications: ^16.3.0
   
-  # 分享功能
-  share_plus: ^7.2.1
+  # 分享功能（暂时注释，等待 embedding v2 迁移）
+  # share_plus: ^7.2.1
   
   # URL 启动
   url_launcher: ^6.2.1
