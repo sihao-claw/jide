@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -39,51 +38,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       _reminderTime = time;
     });
 
-    // 更新本地通知
-    await _scheduleDailyReminder(time);
-  }
-
-  Future<void> _scheduleDailyReminder(TimeOfDay time) async {
-    final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-    
-    final androidDetails = AndroidNotificationDetails(
-      'daily_reminder',
-      '每日提醒',
-      channelDescription: '每天定时提醒查看笔记',
-      importance: Importance.high,
-      priority: Priority.high,
-    );
-
-    final iosDetails = const DarwinNotificationDetails();
-
-    final notificationDetails = NotificationDetails(
-      android: androidDetails,
-      iOS: iosDetails,
-    );
-
-    // 计算触发时间
-    final now = DateTime.now();
-    var scheduledTime = DateTime(
-      now.year,
-      now.month,
-      now.day,
-      time.hour,
-      time.minute,
-    );
-
-    if (scheduledTime.isBefore(now)) {
-      scheduledTime = scheduledTime.add(const Duration(days: 1));
-    }
-
-    await flutterLocalNotificationsPlugin.zonedSchedule(
-      0,
-      '记得',
-      '今天有新的笔记等待复习，快来看看吧！',
-      scheduledTime,
-      notificationDetails,
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiAllowScheduleExact: true,
-    );
+    // TODO: 实现通知功能（需要迁移到 Android embedding v2）
   }
 
   Future<void> _toggleDarkMode(bool value) async {
@@ -158,7 +113,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Text(
-              '💡 提示：如需取消每日提醒，请前往系统设置关闭应用通知',
+              '💡 提示：通知功能将在后续版本中实现（需要 Android embedding v2 迁移）',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: Theme.of(context).colorScheme.outline,
               ),
