@@ -25,7 +25,90 @@ void main() async {
   // 初始化通知服务
   await NotificationService.initialize();
   
-  runApp(const JideApp());
+  runApp(JideApp());
+}
+
+class ThemeProvider extends ChangeNotifier {
+  String _themeMode = 'system';
+
+  String get themeMode => _themeMode;
+
+  ThemeProvider() {
+    _loadThemeMode();
+  }
+
+  Future<void> _loadThemeMode() async {
+    final box = Hive.box('settings');
+    _themeMode = box.get('themeMode', defaultValue: 'system');
+    notifyListeners();
+  }
+
+  Future<void> setThemeMode(String mode) async {
+    final box = Hive.box('settings');
+    await box.put('themeMode', mode);
+    _themeMode = mode;
+    notifyListeners();
+  }
+
+  ThemeMode get themeModeEnum {
+    switch (_themeMode) {
+      case 'dark':
+        return ThemeMode.dark;
+      case 'light':
+        return ThemeMode.light;
+      default:
+        return ThemeMode.system;
+    }
+  }
+}
+
+class JideAppRoot extends StatefulWidget {
+  const JideAppRoot({super.key});
+
+  @override
+  State<JideAppRoot> createState() => _JideAppRootState();
+}
+
+class _JideAppRootState extends State<JideAppRoot> {
+  final ThemeProvider _themeProvider = ThemeProvider();
+
+  void setThemeMode(String mode) {
+    _themeProvider.setThemeMode(mode);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => NoteProvider()),
+        ChangeNotifierProvider.value(value: _themeProvider),
+      ],
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, child) {
+          return MaterialApp(
+            title: '记得',
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+              colorScheme: ColorScheme.fromSeed(
+                seedColor: const Color(0xFF4CAF50),
+                brightness: Brightness.light,
+              ),
+              useMaterial3: true,
+            ),
+            darkTheme: ThemeData(
+              colorScheme: ColorScheme.fromSeed(
+                seedColor: const Color(0xFF4CAF50),
+                brightness: Brightness.dark,
+              ),
+              useMaterial3: true,
+            ),
+            themeMode: themeProvider.themeModeEnum,
+            home: const HomeScreen(),
+          );
+        },
+      ),
+    );
+  }
 }
 
 class JideApp extends StatelessWidget {
@@ -33,30 +116,6 @@ class JideApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => NoteProvider()),
-      ],
-      child: MaterialApp(
-        title: '记得',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF4CAF50),
-            brightness: Brightness.light,
-          ),
-          useMaterial3: true,
-        ),
-        darkTheme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF4CAF50),
-            brightness: Brightness.dark,
-          ),
-          useMaterial3: true,
-        ),
-        themeMode: ThemeMode.system,
-        home: const HomeScreen(),
-      ),
-    );
+    return const JideAppRoot();
   }
 }

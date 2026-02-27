@@ -10,7 +10,7 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   TimeOfDay _reminderTime = const TimeOfDay(hour: 20, minute: 0);
-  bool _isDarkMode = false;
+  String _themeMode = 'system'; // 'system', 'light', 'dark'
 
   final Box _settingsBox = Hive.box('settings');
 
@@ -23,11 +23,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _loadSettings() async {
     final hour = _settingsBox.get('reminderHour', defaultValue: 20);
     final minute = _settingsBox.get('reminderMinute', defaultValue: 0);
-    final isDark = _settingsBox.get('isDarkMode', defaultValue: false);
+    final themeMode = _settingsBox.get('themeMode', defaultValue: 'system');
 
     setState(() {
       _reminderTime = TimeOfDay(hour: hour, minute: minute);
-      _isDarkMode = isDark;
+      _themeMode = themeMode;
     });
   }
 
@@ -41,13 +41,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
     // TODO: 实现通知功能（需要迁移到 Android embedding v2）
   }
 
-  Future<void> _toggleDarkMode(bool value) async {
-    await _settingsBox.put('isDarkMode', value);
+  Future<void> _setThemeMode(String mode) async {
+    await _settingsBox.put('themeMode', mode);
     setState(() {
-      _isDarkMode = value;
+      _themeMode = mode;
     });
-
-    // TODO: 动态切换主题
+    
+    // 动态更新主题模式
+    if (mounted) {
+      final app = context.findAncestorWidgetOfExactType<JideAppRoot>();
+      if (app != null) {
+        app.setThemeMode(mode);
+      }
+    }
   }
 
   @override
@@ -62,12 +68,49 @@ class _SettingsScreenState extends State<SettingsScreen> {
           // 主题设置
           ListTile(
             leading: const Icon(Icons.palette),
-            title: const Text('深色模式'),
-            subtitle: Text(_isDarkMode ? '已开启' : '已关闭'),
-            trailing: Switch(
-              value: _isDarkMode,
-              onChanged: _toggleDarkMode,
-            ),
+            title: const Text('主题模式'),
+            subtitle: Text(_themeMode == 'system' ? '跟随系统' : _themeMode == 'dark' ? '深色模式' : '浅色模式'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () async {
+              await showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('选择主题模式'),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      RadioListTile<String>(
+                        title: const Text('跟随系统'),
+                        value: 'system',
+                        groupValue: _themeMode,
+                        onChanged: (value) {
+                          Navigator.pop(context);
+                          _setThemeMode(value!);
+                        },
+                      ),
+                      RadioListTile<String>(
+                        title: const Text('深色模式'),
+                        value: 'dark',
+                        groupValue: _themeMode,
+                        onChanged: (value) {
+                          Navigator.pop(context);
+                          _setThemeMode(value!);
+                        },
+                      ),
+                      RadioListTile<String>(
+                        title: const Text('浅色模式'),
+                        value: 'light',
+                        groupValue: _themeMode,
+                        onChanged: (value) {
+                          Navigator.pop(context);
+                          _setThemeMode(value!);
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
           ),
           const Divider(),
 

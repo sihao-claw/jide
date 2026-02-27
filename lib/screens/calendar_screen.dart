@@ -19,6 +19,18 @@ class _CalendarScreenState extends State<CalendarScreen> {
   List<Note> _selectedNotes = [];
 
   @override
+  void initState() {
+    super.initState();
+    // 初始化时加载今天的笔记
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final noteProvider = context.read<NoteProvider>();
+      setState(() {
+        _selectedNotes = noteProvider.getNotesByDate(_selectedDay);
+      });
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
