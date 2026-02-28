@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:provider/provider.dart';
+
+import '../main.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -49,10 +52,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     
     // 动态更新主题模式
     if (mounted) {
-      final app = context.findAncestorWidgetOfExactType<JideAppRoot>();
-      if (app != null) {
-        app.setThemeMode(mode);
-      }
+      final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+      themeProvider.setThemeMode(mode);
     }
   }
 
