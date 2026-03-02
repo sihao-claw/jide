@@ -72,9 +72,37 @@ class JideAppRoot extends StatefulWidget {
 
 class _JideAppRootState extends State<JideAppRoot> {
   final ThemeProvider _themeProvider = ThemeProvider();
+  bool _hasShownSplash = false;
 
   void setThemeMode(String mode) {
     _themeProvider.setThemeMode(mode);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _checkAndShowSplash();
+  }
+
+  Future<void> _checkAndShowSplash() async {
+    // 等待一帧确保 Provider 已初始化
+    await WidgetsBinding.instance.endOfFrame;
+    
+    if (_hasShownSplash || !mounted) return;
+    
+    _hasShownSplash = true;
+    final noteProvider = context.read<NoteProvider>();
+    final reviewNotes = noteProvider.reviewNotes;
+    
+    // 只有当有需要复习的笔记时才显示开屏
+    if (reviewNotes.isNotEmpty && mounted) {
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => const SplashReviewScreen(),
+          fullscreenDialog: true,
+        ),
+      );
+    }
   }
 
   @override
@@ -86,22 +114,6 @@ class _JideAppRootState extends State<JideAppRoot> {
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
-          // 在 build 中检查是否需要显示开屏复习
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            final noteProvider = context.read<NoteProvider>();
-            final reviewNotes = noteProvider.reviewNotes;
-            
-            // 只有当有笔记时才显示开屏复习
-            if (reviewNotes.isNotEmpty && mounted) {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => const SplashReviewScreen(),
-                  fullscreenDialog: true,
-                ),
-              );
-            }
-          });
-          
           return MaterialApp(
             title: '记得',
             debugShowCheckedModeBanner: false,

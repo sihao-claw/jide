@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../providers/note_provider.dart';
 import '../screens/note_editor_screen.dart';
+import '../screens/note_detail_screen.dart';
 import '../screens/calendar_screen.dart';
 import '../screens/settings_screen.dart';
 import '../widgets/note_list_tile.dart';
@@ -125,7 +126,17 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                         // 当天的笔记
-                        ...dayNotes.map((note) => NoteListTile(note: note)),
+                        ...dayNotes.map((note) => InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => NoteDetailScreen(note: note),
+                              ),
+                            );
+                          },
+                          child: NoteListTile(note: note),
+                        )),
                       ],
                     );
                   },
