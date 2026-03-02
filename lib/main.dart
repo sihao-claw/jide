@@ -79,33 +79,6 @@ class _JideAppRootState extends State<JideAppRoot> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    _checkAndShowSplash();
-  }
-
-  Future<void> _checkAndShowSplash() async {
-    // 等待一帧确保 Provider 已初始化
-    await WidgetsBinding.instance.endOfFrame;
-    
-    if (_hasShownSplash || !mounted) return;
-    
-    _hasShownSplash = true;
-    final noteProvider = context.read<NoteProvider>();
-    final reviewNotes = noteProvider.reviewNotes;
-    
-    // 只有当有需要复习的笔记时才显示开屏
-    if (reviewNotes.isNotEmpty && mounted) {
-      await Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => const SplashReviewScreen(),
-          fullscreenDialog: true,
-        ),
-      );
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
@@ -114,6 +87,33 @@ class _JideAppRootState extends State<JideAppRoot> {
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
+          // 在 build 完成后检查是否需要显示开屏复习
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (_hasShownSplash || !mounted) return;
+            
+            _hasShownSplash = true;
+            final noteProvider = context.read<NoteProvider>();
+            final allNotes = noteProvider.allNotes;
+            final reviewNotes = noteProvider.reviewNotes;
+            
+            // 调试日志
+            debugPrint('📝 总笔记数：${allNotes.length}');
+            debugPrint('📝 需要复习的笔记数：${reviewNotes.length}');
+            
+            // 只有当有需要复习的笔记时才显示开屏
+            if (reviewNotes.isNotEmpty && mounted) {
+              debugPrint('📝 显示开屏复习页面');
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const SplashReviewScreen(),
+                  fullscreenDialog: true,
+                ),
+              );
+            } else {
+              debugPrint('📝 没有需要复习的笔记，跳过开屏');
+            }
+          });
+          
           return MaterialApp(
             title: '记得',
             debugShowCheckedModeBanner: false,

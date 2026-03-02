@@ -31,8 +31,18 @@ class _SplashReviewScreenState extends State<SplashReviewScreen> {
 
   Future<void> _loadReviewNotes() async {
     final noteProvider = context.read<NoteProvider>();
+    final notes = noteProvider.reviewNotes.take(5).toList();
+    
+    if (!mounted) return;
+    
+    if (notes.isEmpty) {
+      // 没有需要复习的笔记，直接关闭
+      Navigator.pop(context);
+      return;
+    }
+    
     setState(() {
-      _reviewNotes = noteProvider.reviewNotes.take(5).toList();
+      _reviewNotes = notes;
       _isLoading = false;
     });
   }
