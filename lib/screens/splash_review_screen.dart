@@ -21,7 +21,12 @@ class _SplashReviewScreenState extends State<SplashReviewScreen> {
   @override
   void initState() {
     super.initState();
-    _loadReviewNotes();
+    // 使用 addPostFrameCallback 确保在 build 完成后访问 context
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _loadReviewNotes();
+      }
+    });
   }
 
   Future<void> _loadReviewNotes() async {

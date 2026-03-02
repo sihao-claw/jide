@@ -78,30 +78,6 @@ class _JideAppRootState extends State<JideAppRoot> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    // 延迟显示开屏复习页面
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _showSplashReview();
-    });
-  }
-
-  Future<void> _showSplashReview() async {
-    final noteProvider = context.read<NoteProvider>();
-    final reviewNotes = noteProvider.reviewNotes;
-    
-    // 只有当有笔记时才显示开屏复习
-    if (reviewNotes.isNotEmpty) {
-      await Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => const SplashReviewScreen(),
-          fullscreenDialog: true,
-        ),
-      );
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
@@ -110,6 +86,22 @@ class _JideAppRootState extends State<JideAppRoot> {
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
+          // 在 build 中检查是否需要显示开屏复习
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            final noteProvider = context.read<NoteProvider>();
+            final reviewNotes = noteProvider.reviewNotes;
+            
+            // 只有当有笔记时才显示开屏复习
+            if (reviewNotes.isNotEmpty && mounted) {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const SplashReviewScreen(),
+                  fullscreenDialog: true,
+                ),
+              );
+            }
+          });
+          
           return MaterialApp(
             title: '记得',
             debugShowCheckedModeBanner: false,
