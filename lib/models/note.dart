@@ -51,8 +51,8 @@ class Note extends HiveObject {
   DateTime getNextReviewDate() {
     // 简化的艾宾浩斯遗忘曲线
     final intervals = [1, 2, 4, 7, 15, 30]; // 天数
-    final level = (likeCount.clamp(0, 5));
-    final days = intervals[level] ?? 30;
+    final level = likeCount.clamp(0, 5);
+    final days = intervals[level];
     return DateTime.now().add(Duration(days: days));
   }
 
