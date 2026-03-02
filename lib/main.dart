@@ -6,6 +6,7 @@ import 'package:path_provider/path_provider.dart';
 import 'models/note.dart';
 import 'providers/note_provider.dart';
 import 'screens/home_screen.dart';
+import 'screens/splash_review_screen.dart';
 import 'services/notification_service.dart';
 
 void main() async {
@@ -77,6 +78,30 @@ class _JideAppRootState extends State<JideAppRoot> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    // 延迟显示开屏复习页面
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showSplashReview();
+    });
+  }
+
+  Future<void> _showSplashReview() async {
+    final noteProvider = context.read<NoteProvider>();
+    final reviewNotes = noteProvider.reviewNotes;
+    
+    // 只有当有笔记时才显示开屏复习
+    if (reviewNotes.isNotEmpty) {
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => const SplashReviewScreen(),
+          fullscreenDialog: true,
+        ),
+      );
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
@@ -89,16 +114,92 @@ class _JideAppRootState extends State<JideAppRoot> {
             title: '记得',
             debugShowCheckedModeBanner: false,
             theme: ThemeData(
-              colorScheme: ColorScheme.fromSeed(
-                seedColor: const Color(0xFF4CAF50),
+              colorScheme: ColorScheme(
                 brightness: Brightness.light,
+                primary: const Color(0xFF007AFF),
+                onPrimary: const Color(0xFFFFFFFF),
+                secondary: const Color(0xFF5856D6),
+                onSecondary: const Color(0xFFFFFFFF),
+                surface: const Color(0xFFF5F5F5),
+                onSurface: const Color(0xFF1C1C1C),
+                error: const Color(0xFFFF3B30),
+                onError: const Color(0xFFFFFFFF),
+                outline: const Color(0xFF8E8E93),
+                onSurfaceVariant: const Color(0xFF666666),
+              ),
+              scaffoldBackgroundColor: const Color(0xFFFFFFFF),
+              appBarTheme: const AppBarTheme(
+                backgroundColor: Color(0xFFFFFFFF),
+                foregroundColor: Color(0xFF1C1C1C),
+                elevation: 0,
+              ),
+              cardTheme: CardTheme(
+                color: const Color(0xFFF5F5F5),
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              inputDecorationTheme: InputDecorationTheme(
+                filled: true,
+                fillColor: const Color(0xFFF5F5F5),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Color(0xFF007AFF), width: 2),
+                ),
               ),
               useMaterial3: true,
             ),
             darkTheme: ThemeData(
-              colorScheme: ColorScheme.fromSeed(
-                seedColor: const Color(0xFF4CAF50),
+              colorScheme: ColorScheme(
                 brightness: Brightness.dark,
+                primary: const Color(0xFF0A84FF),
+                onPrimary: const Color(0xFFFFFFFF),
+                secondary: const Color(0xFF5E5CE6),
+                onSecondary: const Color(0xFFFFFFFF),
+                surface: const Color(0xFF1C1C1C),
+                onSurface: const Color(0xFFF5F5F5),
+                error: const Color(0xFFFF453A),
+                onError: const Color(0xFFFFFFFF),
+                outline: const Color(0xFF8E8E93),
+                onSurfaceVariant: const Color(0xFF98989D),
+              ),
+              scaffoldBackgroundColor: const Color(0xFF000000),
+              appBarTheme: const AppBarTheme(
+                backgroundColor: Color(0xFF1C1C1C),
+                foregroundColor: Color(0xFFF5F5F5),
+                elevation: 0,
+              ),
+              cardTheme: CardTheme(
+                color: const Color(0xFF1C1C1C),
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              inputDecorationTheme: InputDecorationTheme(
+                filled: true,
+                fillColor: const Color(0xFF2C2C2E),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Color(0xFF0A84FF), width: 2),
+                ),
               ),
               useMaterial3: true,
             ),
